@@ -1,4 +1,4 @@
-- name: Main Playbook
+- name: main playbook
   hosts: localhost
   become: false
 
