@@ -93,7 +93,6 @@
             - "io.github.troyeguo.koodo-reader" # Koodo reader - books/pdf reader
             - com.visualstudio.code
             - org.zotero.Zotero
-            - com.todoist.Todoist
 
             # Social
             - "org.davmail.DavMail" # Exchange protocole bridge
@@ -191,3 +190,16 @@
           - containerd.io
           - docker-buildx-plugin
           - docker-compose-plugin
+
+    # Setup PWA in correct folders opened via chromium
+    # This creates one .desktop file per PWA in ~/.local/share/applications
+    # TODO: support getting the icon from the manifest file or just the favicon
+    # Note: this might only works with KDE Plasma btw, I have no idea if this is working for other desktop environments
+    - name: PWA setup launched with Chromium
+      template:
+        src: pwa.desktop.j2
+        dest: ~/.local/share/applications/{{ item.file }}.desktop
+      loop:
+        - { file: teams, name: Teams, url: https://teams.microsoft.com/v2/?clientType=pwa }
+        - { file: todoist, name: Todoist, url: https://app.todoist.com/app/today }
+        - { file: typst, name: Typst, url: https://typst.app/ }
