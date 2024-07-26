@@ -93,6 +93,7 @@
             - "io.github.troyeguo.koodo-reader" # Koodo reader - books/pdf reader
             - com.visualstudio.code
             - org.zotero.Zotero
+            - md.obsidian.Obsidian
 
             # Social
             - "org.davmail.DavMail" # Exchange protocole bridge
