@@ -1,4 +1,4 @@
-- name: main playbook
+- name: Main Playbook
   hosts: localhost
   become: false
 
@@ -9,165 +9,144 @@
   tasks:
 
   # DNF PACKAGES
-    - name: Install dnf packages
+    - name: Install packages dnf
       register: dnf_result
       become: true
       dnf5:
-        state: present # we just want to install it, but we maintain them up to date with the upa fish function
+        state: present
         name:
-            # Fedora
-            - flatpak
-            - ansible
-            - "xclip" ## For VSCodium extension "Dendron image paste"
-            # - "touchegg" # Enable trackpad gestures service
-            - "neofetch" # Show nice info about your Linux machine
-            - "pavucontrol" # Pulse Audio Volume Control - precise audio I/O software
-            - "chromium" # ?
-            - flameshot
+          # Fedora
+          - ansible
+          #- "touchegg" # Enable trackpad gestures service
+          - "neofetch" # Show nice info about your Linux machine
+          - "pavucontrol" # Pulse Audio Volume Control - precise audio I/O software
+          - "chromium"
+          - flameshot
 
-            # Terminal productivity
-            # TODO: continue to comment why I use all these packages for
-            - fish
-            - kitty
-            - zoxide
-            - yq
-            - jq
-            - tmate
-            - "bat" # cat alternative
-            - "eza" # ls alternative
-            - tree
-            - "fd-find" # find alternative
-            - "icat" # cat alternative for images
-            - "ifuse" # Mount iOS devices
-            - fzf
-            - gh
-            - git
-            - git-delta
+          # Terminal productivity
+          - fish
+          - kitty
+          - zoxide
+          - yq
+          - jq
+          - tmate
+          #- ranger
+          - "bat" # cat alternative
+          - "eza" # ls alternative
+          - tree
+          - "fd-find" # find alternative
+          - "icat" # cat alternative
+          - "ifuse" # mound IOS devices
+          - fzf
+          - gh
+          - git
+          - git-delta
 
-            # Files and others
-            - keepassxc
-            - pandoc
-            - testdisk
-            - tlp
-            - tlp-rdw
+          # Files and others
+          - keepassxc
+          - "cascadia-mono-nf-fonts" # to include the nerdfonts symbol for Yazi and others, need restart to apply
+          - pandoc
+          - testdisk
+          - tlp
+          - tlp-rdw
 
-            # Networking
-            - telnet
-            - whois
-            - wireshark
-            - nmap
-            - netcat
-    
+          # Networking
+          - telnet
+          - whois
+          - wireshark
+          - nmap
+          - netcat
+          - vim-enhanced
+          - flatpak
+          - gcc
+          - cmake
+          - rustup
+
     - name: Show DNF results
       debug: msg={{ dnf_result.results }}
 
-    # FLATPAK PACKAGES
-    - name: Configure flathub as a remote of Flatpak
-      flatpak_remote:
+  # FLATPAK PACKAGES
+    - name: Add the flathub flatpak repository remote to the user installation
+      community.general.flatpak_remote:
         name: flathub
+        state: present
         flatpakrepo_url: https://dl.flathub.org/repo/flathub.flatpakrepo
         method: user
 
-    - name: Install Flatpak packages
-      poll: 0
-      async: 1000
-      register: flatpak_packages
+    - name: Install packages flatpak
       flatpak:
-        state: present # TODO: quote from docs: If state=latest, the module will always return changed=true.
-        remote: flathub # just for expliciteness
+        state: present
         method: user
         name:
-            # Productivity
-            - "com.bitwarden.desktop" # Bitwarden - synced password manager
-            - "com.github.jeromerobert.pdfarranger" # PDF Arranger - Quickly arrange PDF pages, files, merge, split, remove, order, into new PDF.
-            - "com.github.johnfactotum.QuickLookup" # Quick Lookup is a simple dictionnary
-            - "org.freefilesync.FreeFileSync" # Great synchronization tool between 2 folders
-            - com.github.Eloston.UngoogledChromium
-            - "com.github.micahflee.torbrowser-launcher" # The TOR Browser
-            - "net.ankiweb.Anki" # Memorisation tool with deck of cards
-            - "com.github.dynobo.normcap" # OCR local client
-            - "com.github.joseexposito.touche" # Configure trackpad gestures like 3 fingers pinch
-            - "com.uploadedlobster.peek" # Peek - Very easy GIF/MP4 recorder
-            - "dev.geopjr.Calligraphy" # ASCII art generator in a big list of fonts, essential for any TUI project
-            - "org.gnome.baobab" # Disk Usage Analyser - Show nice chart of what use how much
-            - "io.github.troyeguo.koodo-reader" # Koodo reader - books/pdf reader
-            - com.visualstudio.code
-            - org.zotero.Zotero
-            - md.obsidian.Obsidian
+           # Productivity
+          - "com.bitwarden.desktop" # Bitwarden - synced password manager
+          - "com.github.jeromerobert.pdfarranger" # PDF Arranger - Quickly arrange PDF pages, files, merge, split, remove, order, into new PDF.
+          - "com.github.johnfactotum.QuickLookup" # Quick Lookup is a simple dictionnary
+          # org.standardnotes.standardnotes # E2EE synced notes taking tool
+          - "org.freefilesync.FreeFileSync" # Great synchronization tool between 2 folders
+          - com.github.Eloston.UngoogledChromium
+          - "com.github.micahflee.torbrowser-launcher" # The TOR Browser
+          - "net.ankiweb.Anki" # Memorisation tool with deck of cards
+          - "com.github.dynobo.normcap" # OCR local client
+          - "com.github.joseexposito.touche" # Configure trackpad gestures like 3 fingers pinch
+          - "com.uploadedlobster.peek" # Peek - Very easy GIF/MP4 recorder
+          - "org.gnome.baobab" # Disk Usage Analyser - Show nice chart of what use how much
+          - io.github.troyeguo.koodo-reader # Koodo reader - books/pdf reader
+          - com.visualstudio.code
+          - com.discordapp.Discord
+          - org.zotero.Zotero
+          - md.obsidian.Obsidian
 
-            # Social
-            - "org.davmail.DavMail" # Exchange protocole bridge
-            - "org.mozilla.Thunderbird" # The famous email client
-            - "com.github.vladimiry.ElectronMail" # Protonmail Electron client
-            - "org.telegram.desktop" # Native Telegram Desktop app
-            - com.discordapp.Discord
+          # Social
+          - "org.davmail.DavMail" # Exchange protocole bridge
+          - "org.mozilla.Thunderbird" # The famous email client
+          - "org.telegram.desktop" # Native Telegram Desktop app
+          - com.discordapp.Discord
+          
+          # Fedora
+          - "com.github.tchx84.Flatseal" # Flatseal help to manage flatpak apps permissions
+          - "org.kde.isoimagewriter" # Iso Image Writer - Burn ISO image in a USB stick, like Balena Etcher, but even simpler
 
-            # Fedora
-            - "com.github.tchx84.Flatseal" # Flatseal help to manage flatpak apps permissions
-            - "org.kde.isoimagewriter" # Iso Image Writer - Burn ISO image in a USB stick, like Balena Etcher, but even simpler
+          # Visualisation and math
+          - "org.gnome.Calculator" # GNOME calculator is way better than KCalc on numerous aspects
 
-            # Visualisation and math
-            - "org.gnome.Calculator" # GNOME calculator is way better than KCalc on numerous aspects
-
-    # CARGO PACKAGES
-    # Packages built from source
-    - name: Install Rustup via DNF, and build tools like gcc and cmake
-      become: true
-      dnf5:
-        name: "{{ item }}"
-        state: latest
-      loop:
-        - rustup
-        - gcc
-        - cmake
-
-    - name: Run rustup init to install all useful Rust tools
+  # RUST PACKAGES
+    - name: Install rustup
       command:
-        cmd: rustup-init -y
-        creates: "{{ ansible_env.HOME }}/.cargo/bin/rustc"
+        cmd: "rustup-init -y"
+      args:
+        creates: "{{ansible_env.HOME}}/.cargo/bin/rustc"
 
-    # Packages installed from compiled binaries available in GitHub releases
-    - name: Install Cargo binstall for faster package install
+    - name: Install cargo-binstall
       community.general.cargo:
-        path: "{{ ansible_env.HOME }}/.cargo/bin" # just for expliciteness
-        executable: "{{ ansible_env.HOME }}/.cargo/bin/cargo"
-        name:
-            - cargo-binstall
-        locked: true
-        state: present #
+        name: "cargo-binstall"
+        executable: "{{ansible_env.HOME}}/.cargo/bin/cargo"
 
-    - name: Get the list of installed Cargo packages
+    - name: Binstall packages cargo
       environment:
-        PATH: "{{ ansible_env.HOME }}/.cargo/bin:{{ ansible_env.PATH }}"
-      shell: "cargo install --list"
-      register: cargo_list
-      changed_when: False
-
-    - name: Install Cargo packages via binstall
-      poll: 0 # as this could include some compilation from source
-      async: 1000
-      environment:
-        PATH: "{{ ansible_env.HOME }}/.cargo/bin:{{ ansible_env.PATH }}"
+        PATH: "{{ansible_env.HOME}}/.cargo/bin:{{ansible_env.PATH}}"
       vars:
         items:
-            - "cargo-update" # package to update these packages
-            - "gitui@0.26.1" # The best Git TUI IMHO :) https://github.com/extrawurst/gitui
-            - "html2pdf" # Easier way to convert any HTML to PDF (using headless chrome/chromium) without the Print Menu in Firefox
-            - "mdcat" # Markdown preview with colors in the terminal
-            - "spotify_player" # Rust TUI for Spotify - https://github.com/aome510/spotify-player
-            - "tlrc" # TLDR.sh Rust Client - https://tldr.sh/tlrc/
+          - cargo-update # package to update these packages
+          - gitui@0.26.1 # The best Git TUI IMHO :) https://github.com/extrawurst/gitui
+          #- html2pdf # Easier way to convert any HTML to PDF (using headless chrome/chromium) without the Print Menu in Firefox
+          - mdcat # Markdown preview with colors in the terminal
+          # - rustlings # ruslings runner to practice Rust with small exos - https://rustlings.cool/
+          - spotify_player # Rust TUI for Spotify - https://github.com/aome510/spotify-player
+          - tlrc # TLDR.sh Rust Client - https://tldr.sh/tlrc/
 
-            # # Yazi - blazing fast terminal file manager written in Rust, based on async I/O.
-            # # https://yazi-rs.github.io/
-            - yazi-cli
-            - yazi-fm
+          # # Yazi - blazing fast terminal file manager written in Rust, based on async I/O.
+          # # https://yazi-rs.github.io/
+          - yazi-cli
+          - yazi-fm
 
-            ## Others tools not used directly
-            - "cargo-make" # Use make with Cargo, I use this to build espanso
+          ## Others tools not used directly
+          - cargo-make # Use make with Cargo, I use this to build espanso
       command:
         cmd: "cargo binstall {{ items | join(' ') }} -y --locked --continue-on-failure"
-
-  # Docker tools and containers
+    
+    
+    # Docker tools and containers
     # Based on https://docs.docker.com/engine/install/fedora/
     # and looking at the stable repos details inside https://download.docker.com/linux/fedora/docker-ce.repo
     # to avoid installing dnf-plugins-core
@@ -192,15 +171,35 @@
           - docker-buildx-plugin
           - docker-compose-plugin
 
+    - name: Starting docker systemd service
+      become: true
+      service:
+        name: docker
+        state: started
+        enabled: true
+
     # Setup PWA in correct folders opened via chromium
     # This creates one .desktop file per PWA in ~/.local/share/applications
-    # TODO: support getting the icon from the manifest file or just the favicon
-    # Note: this might only works with KDE Plasma btw, I have no idea if this is working for other desktop environments
+    # TODO: fix icon not working fully (support getting icon/favicon from manifest file)
+    # Note: might only work with KDE Plasma.
+    - name: PWA folder definition
+      set_fact:
+        base_pwa: "{{ ansible_env.HOME }}/.local/share/applications/"
+
     - name: PWA setup launched with Chromium
+      register: pwas
       template:
         src: pwa.desktop.j2
-        dest: ~/.local/share/applications/{{ item.file }}.desktop
+        dest: "{{ base_pwa }}{{ item.file }}.desktop"
       loop:
-        - { file: teams, name: Teams, url: https://teams.microsoft.com/v2/?clientType=pwa }
-        - { file: todoist, name: Todoist, url: https://app.todoist.com/app/today }
-        - { file: typst, name: Typst, url: https://typst.app/ }
+        - { file: teams, name: Teams, url: https://teams.microsoft.com/v2/?clientType=pwa, icon: https://statics.teams.cdn.office.net/hashed/favicon/prod/favicon-512x512-8d51633.png }
+        - { file: todoist, name: Todoist, url: https://app.todoist.com/app/today, icon: https://app.todoist.com/app/manifest_icons/icon_180x180.d0c3ef3c6be29a9ca57ead5171bbebc4.png }
+        - { file: typst, name: Typst, url: https://typst.app/, icon: https://typst.app/assets/android-chrome-512x512.png }
+
+    - name: Download icons of PWA
+      get_url:
+        url: "{{ item.item.icon }}"
+        dest: ~/.local/share/applications/{{ item.item.file }}.png
+      loop: "{{ pwas.results }}"
+
+
